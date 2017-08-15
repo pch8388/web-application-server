@@ -15,7 +15,14 @@
 * 각 요구사항을 구현하는 것이 중요한 것이 아니라 구현 과정을 통해 학습한 내용을 인식하는 것이 배움에 중요하다. 
 
 ### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
-* 
+* http header의 구조를 파악하도록 유도하고 header의 정보를 이용하는 방법에 대해 생각해볼 수 있는 부분이었다.
+* 우선 hint 1의 내용처럼 BuffredReader를 이용하여 InputStream을 한줄씩 읽어왔다.(readLine메소드)    
+   검색키워드 - java inputstream bufferedreader  
+   참고글 - https://stackoverflow.com/questions/5200187/convert-inputstream-to-bufferedreader
+* 일단은 한줄씩 읽어온 header의 모든 부분을 출력해보았는 데, 첫째줄에 사용자가 지정하는 경로가 포함되어 있는 것을 볼 수 있었다.
+  첫째줄의 두번째 인자로 경로가 들어온다. String class의 split 메소드를 이용하여 (split 메소드의 파라미터는 정규표현식) 공백을 
+  기준으로 잘라서 두번째 인자를 추출하는 메소드를 작성하였다.
+* 파일데이터를 byte 배열로 읽어들이는 Files.readAllBytes 메소드의 사용방법에 대해서도 알게되었다. => Files.readAllBytes(Path)   
 
 ### 요구사항 2 - get 방식으로 회원가입
 * 
