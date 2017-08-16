@@ -63,19 +63,23 @@ public class RequestHandler extends Thread {
         		log.debug("header : " + line);
         	}
         	
+        	DataOutputStream dos = new DataOutputStream(out);
+        	byte[] body;
+        	
         	if(tokens[1].equals("/user/create")) {
         		line = IOUtils.readData(buf, contentLength);
         		Map<String,String> map = HttpRequestUtils.parseQueryString(line);
         		user = userMapping(map);
         		log.debug("body : {}"+line);
         		log.debug("User : {}"+user.toString());
+        		body = Files.readAllBytes(new File("./webapp/index.html").toPath());
+        		response302Header(dos, body.length);
+        		responseBody(dos, body);
+        	}else {
+        		body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
+                response200Header(dos, body.length);
+                responseBody(dos, body);
         	}
-        	
-        	
-            DataOutputStream dos = new DataOutputStream(out);
-        	byte[] body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
-            response200Header(dos, body.length);
-            responseBody(dos, body);
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -102,6 +106,17 @@ public class RequestHandler extends Thread {
 		return param;
 	}
 */
+    private void response302Header(DataOutputStream dos,int lengthOfBodyContent) {
+    	try {
+    		dos.writeBytes("HTTP/1.1 302 Found \r\n");
+    		dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+    		dos.writeBytes("Content-Length: " + lengthOfBodyContent+ "\r\n");
+    		dos.writeBytes("\r\n");
+    	}catch(IOException e) {
+    		log.error(e.getMessage());
+    	}
+    }
+    
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");

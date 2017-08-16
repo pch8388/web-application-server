@@ -36,7 +36,9 @@
 * header에서 content-length 부분의 값을 추출해 /user/create 요청이 올 때 길이만큼 데이터를 읽도록 하였다.
 
 ### 요구사항 4 - redirect 방식으로 이동
-* 
+* 302 status code는 url을 redirection 하는 코드이다.
+* redirection을 위해 response header에 200 ok 대신 302 Found를 추가하는 코드를 작성하였다.
+* 크롬 개발자 도구를 통해 reponse header를 확인한 결과 정상적으로 302 Found를 상태코드로 응답하며 redirection 해주는 것을 확인하였다.
 
 ### 요구사항 5 - cookie
 * 
