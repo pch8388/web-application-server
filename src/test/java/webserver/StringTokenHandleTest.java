@@ -16,7 +16,17 @@ public class StringTokenHandleTest {
 	
 	@Test
 	public void requestUrl() {
-		assertEquals("/index.html", st.requestUrl("/index.html a b c d e f"));
+		assertEquals("/index.html", st.requestUrl("/index.html?aaaaaaaaaaa a b c d e f"));
 		System.out.println("requestUrl");
+	}
+	
+	@Test
+	public void requestParse() {
+		assertEquals("/user/create", st.requestParse("/user/create?userID=java&password=pass&name=Jaesung"));
+	}
+	
+	@Test
+	public void requestParam() {
+		assertEquals("userID=java&password=pass&name=Jaesung", st.requestParam("/user/create?userID=java&password=pass&name=Jaesung"));
 	}
 }

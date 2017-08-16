@@ -8,9 +8,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import model.User;
+import util.HttpRequestUtils;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -32,9 +36,22 @@ public class RequestHandler extends Thread {
         	
         	String line = buf.readLine();
         	log.debug("requestLine : " + line);
-        	String url = requestURL(line);
         	
-        	if(line == null) {return;}
+        	if(line == null) {
+        		return;
+        	}
+        	
+        	User user;
+        	String[] tokens = line.split(" ");
+        	if(tokens[1].contains("?")) {
+        		Map<String,String> map = HttpRequestUtils.parseQueryString(requestParam(tokens[1]));
+        		user = userMapping(map);
+        		
+        		tokens[1] = requestParse(tokens[1]);
+        		log.debug("User : "+user.toString());
+    		}
+        	
+        	
         	
         	while(!line.equals("")){
         		line = buf.readLine();
@@ -42,7 +59,7 @@ public class RequestHandler extends Thread {
         	}
         	
             DataOutputStream dos = new DataOutputStream(out);
-        	byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
+        	byte[] body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
@@ -50,10 +67,26 @@ public class RequestHandler extends Thread {
         }
     }
     
-    private String requestURL(String line) {
-    	String[] tokens = line.split(" ");
-    	return tokens[1];
+    
+    private User userMapping(Map<String,String> map) {
+    	String userId = (String)map.get("userId");
+    	String password = (String)map.get("password");
+    	String name = (String)map.get("name");
+    	String email = (String)map.get("email");
+    	return new User(userId,password,name,email);
     }
+    
+    private String requestParse(String url) {
+		int index = url.indexOf("?");
+		String requestPath = url.substring(0, index);
+		return requestPath;
+	}
+	
+	private String requestParam(String url) {
+		int index = url.indexOf("?");
+		String param = url.substring(index+1);
+		return param;
+	}
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {

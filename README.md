@@ -25,7 +25,11 @@
 * 파일데이터를 byte 배열로 읽어들이는 Files.readAllBytes 메소드의 사용방법에 대해서도 알게되었다. => Files.readAllBytes(Path)   
 
 ### 요구사항 2 - get 방식으로 회원가입
-* 
+* get방식으로 요청을 보내면 쿼리스트링으로 url의 뒷부분에 요청데이터가 추가된다. url과 "?" 문자로 구분되며, key=value 의 형태로 추가된다.
+  값이 여러개일 경우 key=value 사이에 "&"로 묶어서 나타난다.
+* 요청 path와 parameter를 분리해보는 메소드를 jUnit으로 test 해보았고, util.HttpRequestUtils 클래스의 parseQueryString()메소드의 
+ 흐름을 살펴보며 어떻게 사용하는 지를 확인하였다.
+* parameter를 Map<String,String> 에서 가져와 User 클래스에 저장(인스턴스를 생성) 하였다. 따로 메소드를 만들어 Map의 value값으로 User클래스의 인스턴스를 생성했다.
 
 ### 요구사항 3 - post 방식으로 회원가입
 * 
