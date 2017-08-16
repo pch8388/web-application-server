@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import model.User;
 import util.HttpRequestUtils;
+import util.IOUtils;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -43,20 +44,33 @@ public class RequestHandler extends Thread {
         	
         	User user;
         	String[] tokens = line.split(" ");
-        	if(tokens[1].contains("?")) {
+        	/*if(tokens[1].contains("?")) {
         		Map<String,String> map = HttpRequestUtils.parseQueryString(requestParam(tokens[1]));
         		user = userMapping(map);
         		
         		tokens[1] = requestParse(tokens[1]);
         		log.debug("User : "+user.toString());
-    		}
+    		}*/
         	
-        	
-        	
+        	String[] temp;
+        	int contentLength = 0;
         	while(!line.equals("")){
         		line = buf.readLine();
+        		if(line.contains("Content-Length")) {
+        			temp = line.split(" ");
+        			contentLength = Integer.parseInt(temp[1]);
+        		}
         		log.debug("header : " + line);
         	}
+        	
+        	if(tokens[1].equals("/user/create")) {
+        		line = IOUtils.readData(buf, contentLength);
+        		Map<String,String> map = HttpRequestUtils.parseQueryString(line);
+        		user = userMapping(map);
+        		log.debug("body : {}"+line);
+        		log.debug("User : {}"+user.toString());
+        	}
+        	
         	
             DataOutputStream dos = new DataOutputStream(out);
         	byte[] body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
@@ -76,7 +90,7 @@ public class RequestHandler extends Thread {
     	return new User(userId,password,name,email);
     }
     
-    private String requestParse(String url) {
+/*    private String requestParse(String url) {
 		int index = url.indexOf("?");
 		String requestPath = url.substring(0, index);
 		return requestPath;
@@ -87,7 +101,7 @@ public class RequestHandler extends Thread {
 		String param = url.substring(index+1);
 		return param;
 	}
-
+*/
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");

@@ -32,7 +32,8 @@
 * parameter를 Map<String,String> 에서 가져와 User 클래스에 저장(인스턴스를 생성) 하였다. 따로 메소드를 만들어 Map의 value값으로 User클래스의 인스턴스를 생성했다.
 
 ### 요구사항 3 - post 방식으로 회원가입
-* 
+* post방식으로 요청을 보내면 http body에 데이터가 추가되고 url 부분에서는 보이지 않는다.
+* header에서 content-length 부분의 값을 추출해 /user/create 요청이 올 때 길이만큼 데이터를 읽도록 하였다.
 
 ### 요구사항 4 - redirect 방식으로 이동
 * 
