@@ -13,6 +13,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import db.DataBase;
 import model.User;
 import util.HttpRequestUtils;
 import util.IOUtils;
@@ -42,7 +43,6 @@ public class RequestHandler extends Thread {
         		return;
         	}
         	
-        	User user;
         	String[] tokens = line.split(" ");
         	/*if(tokens[1].contains("?")) {
         		Map<String,String> map = HttpRequestUtils.parseQueryString(requestParam(tokens[1]));
@@ -53,6 +53,7 @@ public class RequestHandler extends Thread {
     		}*/
         	
         	String[] temp;
+        	String[] cookie = null;
         	int contentLength = 0;
         	while(!line.equals("")){
         		line = buf.readLine();
@@ -60,26 +61,48 @@ public class RequestHandler extends Thread {
         			temp = line.split(" ");
         			contentLength = Integer.parseInt(temp[1]);
         		}
+        		if(line.contains("Cookie")) {
+        			cookie = line.split(" ");
+        		}
         		log.debug("header : " + line);
         	}
         	
         	DataOutputStream dos = new DataOutputStream(out);
         	byte[] body;
         	
+        	if(cookie[1].equals("logined=true")) {
+        		body = Files.readAllBytes(new File("./webapp/index.html").toPath());
+        		response200Header(dos, body.length);
+        		responseBody(dos,body);
+        	}
+        	if(cookie[1].equals("logined=false")) {
+        		body = Files.readAllBytes(new File("./webapp/login_failed.html").toPath());
+        		response200Header(dos, body.length);
+        		responseBody(dos,body);
+        	}
+        	
         	if(tokens[1].equals("/user/create")) {
         		line = IOUtils.readData(buf, contentLength);
         		Map<String,String> map = HttpRequestUtils.parseQueryString(line);
-        		user = userMapping(map);
+        		DataBase.addUser(userMapping(map));
         		log.debug("body : {}"+line);
-        		log.debug("User : {}"+user.toString());
         		body = Files.readAllBytes(new File("./webapp/index.html").toPath());
         		response302Header(dos, body.length);
         		responseBody(dos, body);
-        	}else {
-        		body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
-                response200Header(dos, body.length);
-                responseBody(dos, body);
         	}
+        	if(tokens[1].equals("/user/login")) {
+        		line = IOUtils.readData(buf, contentLength);
+        		Map<String,String> map = HttpRequestUtils.parseQueryString(line);
+        		User user = DataBase.findUserById(map.get("userId"));
+        		if(user.getPassword().equals(map.get("password"))) {
+        			
+        		}
+        	}
+        	
+        	body = Files.readAllBytes(new File("./webapp"+tokens[1]).toPath());
+            response200Header(dos, body.length);
+            responseBody(dos, body);
+        	
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -111,6 +134,7 @@ public class RequestHandler extends Thread {
     		dos.writeBytes("HTTP/1.1 302 Found \r\n");
     		dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
     		dos.writeBytes("Content-Length: " + lengthOfBodyContent+ "\r\n");
+    		dos.writeBytes("Location: http://localhost:8080/index.html");
     		dos.writeBytes("\r\n");
     	}catch(IOException e) {
     		log.error(e.getMessage());

@@ -39,9 +39,12 @@
 * 302 status code는 url을 redirection 하는 코드이다.
 * redirection을 위해 response header에 200 ok 대신 302 Found를 추가하는 코드를 작성하였다.
 * 크롬 개발자 도구를 통해 reponse header를 확인한 결과 정상적으로 302 Found를 상태코드로 응답하며 redirection 해주는 것을 확인하였다.
+* 완성한것으로 착각하였으나 위키피디아의 문서 내용중 내가 필요한 부분만 수정하면 된다고 생각하여 302 Found 코드부분만 추가하였는 데, 추가 요구사항을 다 읽지 못하여서
+생긴 오류로 브라우저의 url이 /user/create로 남아있는 문제가 발생하였다. 리다이렉션 해줄 때 reponse header에 Location 필드를 추가하고 리다이렉션하는 주소를 
+value로 주면 브라우저의 url이 해당 주소로 변경이 된다.
 
 ### 요구사항 5 - cookie
-* 
+*
 
 ### 요구사항 6 - stylesheet 적용
 * 
