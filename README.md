@@ -34,7 +34,9 @@
 * 위키피디아에서 302 코드에 대해 찾아봄 -> url redirection해주고 Server에서 header에 HTTP/1.1 302 Found와 함께 Location필드에 url을 입력하여 준다.
 
 ### 요구사항 5 - cookie
-* 
+* 미숙한 null 체크와 디버깅으로 시간 낭비 => test case 작성법 공부해야함.. 안되면 디버깅부터..
+* 방법 자체는 간단하게 해결되었다. response 해주던 메소드에 override 해서 cookie 추가
+* 실패시 redircetion 필요해서 302 status 사용
 
 ### 요구사항 6 - stylesheet 적용
 * 
