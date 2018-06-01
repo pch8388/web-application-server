@@ -31,7 +31,7 @@
 * 힌트를 안보고 했다가 IOUtils를 사용안하고 reader를 조작하는 방법으로 하다가 실패.. 첫번째 read시 공백이 나오면 read를 멈추기 때문에 다시 읽으면 다음 부분부터 나오겠지하고 생각함. => 일부는 맞은거 같으나 .. 다시 같은 방법으로 읽고 나서 null값이 올때 while문을 멈추었으나 안멈추고 null을 무한히 뱉어냄
 
 ### 요구사항 4 - redirect 방식으로 이동
-* 
+* 위키피디아에서 302 코드에 대해 찾아봄 -> url redirection해주고 Server에서 header에 HTTP/1.1 302 Found와 함께 Location필드에 url을 입력하여 준다.
 
 ### 요구사항 5 - cookie
 * 
