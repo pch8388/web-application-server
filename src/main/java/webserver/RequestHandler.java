@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import model.User;
 import util.HttpRequestUtils;
+import util.IOUtils;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -38,6 +39,8 @@ public class RequestHandler extends Thread {
         	  String line = "";
         	  int index = 0;
         	  String url = "";
+        	  int contentLength = 0;
+        	  
         	  while(!"".equals(line=reader.readLine())) {
         		  if(line == null) {
         			  return;
@@ -46,20 +49,27 @@ public class RequestHandler extends Thread {
         			  String[] tokens = line.split(" ");
         			  url = tokens[1];
         		  }
+        		  if(line.contains("Content-Length")) {
+        			  String[] tokens = line.split(" ");
+        			  contentLength = Integer.parseInt(tokens[1]);
+        		  }
         		  log.debug("line : "+line);  
         		  index++;
         	  }
-        	  String requestPath = url;
         	  if(url.contains("/user/create")) {
-        		  int indexOf = url.indexOf("?");
-            	  requestPath = url.substring(0, indexOf);
-            	  String param = url.substring(indexOf+1);
+        		  while(reader.ready()) {
+        			  line = IOUtils.readData(reader, contentLength);
+        			  log.debug("body line : "+line);
+        		  }
+        		  int indexOf = line.indexOf("?");
+//            	  requestPath = url.substring(0, indexOf);
+            	  String param = line.substring(indexOf+1);
             	  Map<String,String> map = HttpRequestUtils.parseQueryString(param);
             	  User user = new User(map.get("userId"), map.get("password"), map.get("name"), map.get("email"));
             	  log.debug("user============>>"+user.toString());
         	  }
 
-        	  byte[] body = Files.readAllBytes(new File("./webapp"+requestPath).toPath());
+        	  byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
             response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException e) {
