@@ -38,8 +38,13 @@
 * 방법 자체는 간단하게 해결되었다. response 해주던 메소드에 override 해서 cookie 추가
 * 실패시 redircetion 필요해서 302 status 사용
 
-### 요구사항 6 - stylesheet 적용
-* 
+### 요구사항 6 - 사용자 목록 출력
+* StringBuilder 사용방법을 구글링해서 append로 tag와 사용자 목록을 넣고 다시 검색을 통해 StringBuilder를 byte array로 convert 해서 response body에 넣어주었다.
+* DataBase 에서 Collection으로 User클래스를 받아와서 Iterator 사용하여 동적으로 사용자 목록을 출려하였다.
+* html의 구조나 디자인적인 측면은 따로 고려하지 않았다...
+
+### 요구사항 7 - stylesheet 적용
+*
 
 ### heroku 서버에 배포 후
 * 

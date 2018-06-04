@@ -9,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -42,6 +44,8 @@ public class RequestHandler extends Thread {
         	  String url = "";
         	  int contentLength = 0;
         	  String status = "";
+        	  Map<String,String> cookies = null;
+        	  boolean temp = false;
         	  
         	  while(!"".equals(line=reader.readLine())) {
         		  if(line == null) {
@@ -56,9 +60,49 @@ public class RequestHandler extends Thread {
         			  String[] tokens = line.split(" ");
         			  contentLength = Integer.parseInt(tokens[1]);
         		  }
+        		  if(line.contains("Cookie")) {
+        			  String[] tokens = line.split(" ");
+        			  cookies = HttpRequestUtils.parseCookies(tokens[1]);
+        			  temp = Boolean.parseBoolean(cookies.get("logined"));
+        			  log.debug("temp : "+temp);
+        		  }
         		  log.debug("line : "+line);  
         		  index++;
         	  }
+        	  
+        	  if(url.contains("/user/list")) {
+        		  if(!temp) {
+        			 url = "/user/login.html";
+             	 byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
+                 response302Header(dos, body.length);
+                 responseBody(dos, body);
+        		  }
+        		  Collection<User> user = DataBase.findAll();
+        		  Iterator<User> iter = user.iterator();
+        		  
+        		  StringBuilder builder = new StringBuilder();
+        		  builder.append("<html><head><body>");
+        		  builder.append("<table>");
+        		  
+        		  while(iter.hasNext()) {
+        			User it = iter.next();
+        			builder.append("<tr>").append("<td>");  
+        			builder.append(it.getUserId());  
+        			builder.append("</td><td>");  
+        			builder.append(it.getName());  
+        			builder.append("</td><td>");  
+        			builder.append(it.getEmail());  
+        			builder.append("</td>").append("</tr>");  
+        		  }
+        		  
+        		  builder.append("</table>");
+        		  builder.append("</body></head></html>");
+        		  
+        		 
+              response200Header(dos, builder.length());
+              responseBody(dos, String.valueOf(builder).getBytes());
+        	  }
+        	  
         	  if(url.contains("/user/create")) {
         		  while(reader.ready()) {
         			  line = IOUtils.readData(reader, contentLength);
