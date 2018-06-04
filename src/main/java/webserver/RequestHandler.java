@@ -103,6 +103,12 @@ public class RequestHandler extends Thread {
               responseBody(dos, String.valueOf(builder).getBytes());
         	  }
         	  
+        	  if(url.contains(".css")) {
+            	  byte[] body = Files.readAllBytes(new File("./webapp"+url).toPath());
+               responseCssHeader(dos, body.length);
+               responseBody(dos, body);
+        	  }
+        	  
         	  if(url.contains("/user/create")) {
         		  while(reader.ready()) {
         			  line = IOUtils.readData(reader, contentLength);
@@ -157,7 +163,18 @@ public class RequestHandler extends Thread {
         }
     }
 
-    private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
+    private void responseCssHeader(DataOutputStream dos, int lengthOfBodyContent) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+	}
+
+	private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
